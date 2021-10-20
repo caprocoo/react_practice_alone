@@ -4,13 +4,15 @@ const port = 5000;
 const mongoose = require('mongoose');
 const {User} = require('./models/User');
 const bodyParser = require('body-parser');
+const config = require('./config/key')
+
 
 app.use(bodyParser.urlencoded({
     extended : true
 }));
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb+srv://BrianOh:abcd1234@react-practice-alone.d00el.mongodb.net/myFirstDatabase?retryWrites=true&w=majority').then(()=>{
+mongoose.connect(config.mongoURI).then(()=>{
     console.log('MongoDB Connected...')
 }).catch(err=>console.log(err))
 

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 //10자리 암호화된 비밀번호
 const saltRounds = 10;
+const jwt = require('jsonwebtoken');
 
 
 
@@ -72,11 +73,23 @@ userSchema.methods.generateToken = function(cb){
     //jsonwebtoken을 이용해서 token 생성하기
     var user = this;
     //user._id와 secretToken을 합쳐서 token을 만든다
-    var token = jwt.sign(user._id,toHexString(), 'secretToken')
+    var token = jwt.sign(user._id.toHexString(), 'secretToken')
     user.token = token;
     user.save(function(err, user){
          if(err) return cb(err)
          cb(null, user)
+    })
+}
+
+userSchema.statics.findByToken = function(token, cb){
+    var user = this;
+
+    jwt.verify(token, 'secretToken', function(err, decoded){
+        user.findOne({"_id" : decoded, "token" : token }, function(err, user){
+            if(err) return cb(err);
+            cb(null, user)
+
+        })
     })
 }
 
